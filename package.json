@@ -14,9 +14,12 @@
     "mongoose": "^8.19.2",
     "next": "16.0.1",
     "node-cron": "^4.2.1",
+    "papaparse": "^5.5.3",
     "puppeteer": "^24.27.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
+    "react-modal": "^3.16.3",
+    "react-paginate": "^8.3.0",
     "rss-parser": "^3.13.0"
   },
   "devDependencies": {
