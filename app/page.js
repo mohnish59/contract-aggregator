@@ -145,6 +145,6 @@ export default function Home() {
           </div>
         )}
       </Modal>
-    </main>
+    </div>
   );
 }
