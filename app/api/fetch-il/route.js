@@ -9,21 +9,22 @@ export async function GET() {
     const response = await axios.get('https://datacatalog.cookcountyil.gov/resource/qh8j-6k63.json', {
       params: {
         '$limit': 1000,
-        '$order': 'award_date DESC'  // Recent first
+        '$order': 'start_date DESC',
+        '$where': 'start_date > "2024-01-01T00:00:00.000"'
       }
     });
 
     const data = response.data;
     const opportunities = data.map(item => ({
-      title: item.contract_title || item.description,
-      description: item.description || item.contract_title,
-      postedDate: item.award_date ? new Date(item.award_date) : null,
+      title: (typeof item.description === 'object' ? item.description.description : item.description) || item.category || 'Untitled',
+      description: (typeof item.description === 'object' ? item.description.description : item.description) || '',
+      postedDate: item.start_date ? new Date(item.start_date) : null,
       dueDate: item.end_date ? new Date(item.end_date) : null,
-      award: { amount: item.contract_amount || 0 },
+      award: { amount: parseFloat(item.amount) || 0 },
       link: item.contract_number ? `https://datacatalog.cookcountyil.gov/resource/qh8j-6k63?contract_number=${item.contract_number}` : '',
       source: 'il',
       placeOfPerformance: { state: { code: 'IL' } },
-    }));
+    })).filter(item => item.title !== 'Untitled');
 
     const ops = opportunities.map(item => ({
       updateOne: {

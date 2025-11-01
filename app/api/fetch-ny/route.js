@@ -9,21 +9,22 @@ export async function GET() {
     const response = await axios.get('https://data.cityofnewyork.us/resource/i858-z32e.json', {
       params: {
         '$limit': 1000,
-        '$order': 'start_date DESC'  // Recent first
+        '$order': 'registration_date DESC',
+        '$where': 'registration_date > "2024-01-01T00:00:00.000"'
       }
     });
 
     const data = response.data;
     const opportunities = data.map(item => ({
-      title: item.contract_description,
-      description: item.contract_purpose,
-      postedDate: item.start_date ? new Date(item.start_date) : null,
-      dueDate: item.end_date ? new Date(item.end_date) : null,
-      award: { amount: item.contract_amount || 0 },
-      link: item.contract_number ? `https://passport.cityofnewyork.us/page.aspx/en/ctr/contract_public?cn=${item.contract_number}` : '',
+      title: item.short_title || item.type_of_notice_description || 'Untitled',
+      description: item.printout_1 || item.additional_description_1 || '',
+      postedDate: item.registration_date ? new Date(item.registration_date) : null,
+      dueDate: item.due_date ? new Date(item.due_date) : null,
+      award: { amount: parseFloat(item.contract_amount) || 0 },
+      link: item.epin ? `https://passport.cityofnewyork.us/page.aspx/en/ctr/contract_public?cn=${item.epin}` : '',
       source: 'ny',
       placeOfPerformance: { state: { code: 'NY' } },
-    }));
+    })).filter(item => item.title !== 'Untitled');
 
     const ops = opportunities.map(item => ({
       updateOne: {
