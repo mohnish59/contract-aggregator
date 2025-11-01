@@ -6,6 +6,7 @@ import Papa from 'papaparse';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tooltip } from 'react-tooltip';
 import { FaInfoCircle, FaMoon, FaSun } from 'react-icons/fa';
+import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, Legend } from 'recharts';
 
 export default function Home() {
   useEffect(() => {
@@ -71,6 +72,15 @@ export default function Home() {
     link.click();
   };
 
+  // Chart data prep (contracts by state)
+  const stateData = filteredContracts.reduce((acc, c) => {
+    const state = c.placeOfPerformance?.state?.code || 'Unknown';
+    acc[state] = (acc[state] || 0) + 1;
+    return acc;
+  }, {});
+  const chartData = Object.keys(stateData).map(key => ({ name: key, value: stateData[key] }));
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#A28EFF'];
+
   const paginatedContracts = filteredContracts.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
 
   return (
@@ -107,6 +117,25 @@ export default function Home() {
           </select>
         </div>
         <button onClick={exportCSV} className="mb-4 bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Export to CSV</button>
+        {/* Dashboard Charts */}
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-4">Contract Trends</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className={`p-4 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
+              <h3 className="text-lg mb-2">Contracts by State</h3>
+              <PieChart width={300} height={300}>
+                <Pie data={chartData} cx="50%" cy="50%" labelLine={false} outerRadius={80} fill="#8884d8" dataKey="value">
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <RechartsTooltip />
+                <Legend />
+              </PieChart>
+            </div>
+            {/* Add more charts here later, e.g., by NAICS */}
+          </div>
+        </div>
         {isLoading ? (
           <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
