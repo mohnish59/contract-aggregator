@@ -4,9 +4,11 @@ import ReactPaginate from 'react-paginate';
 import Modal from 'react-modal';
 import Papa from 'papaparse';
 
-Modal.setAppElement('#__next');
-
 export default function Home() {
+  useEffect(() => {
+    Modal.setAppElement('#__next');
+  }, []);
+
   const [contracts, setContracts] = useState([]);
   const [filteredContracts, setFilteredContracts] = useState([]);
   const [filters, setFilters] = useState({ category: '', valueMin: '', setAside: '', dateFrom: '', state: '', source: '' });
