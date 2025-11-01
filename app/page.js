@@ -37,6 +37,8 @@ export default function Home() {
         <option value="VA">Virginia (VA)</option>
         <option value="MD">Maryland (MD)</option>
         <option value="DC">District of Columbia (DC)</option>
+        <option value="NY">New York (NY)</option>
+        <option value="IL">Illinois (IL)</option>
         {/* Add more states later if needed */}
       </select>
       <ul>
